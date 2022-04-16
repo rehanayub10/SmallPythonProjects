@@ -64,5 +64,6 @@ def getSevSegStr(number, minWidth=0):
     return "\n".join(rows)
 
 if __name__ == "__main__":
-    print(getSevSegStr(92.8,2))
+    #print(getSevSegStr(92.8,2))
+    pass
 
