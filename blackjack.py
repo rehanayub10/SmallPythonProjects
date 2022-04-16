@@ -17,12 +17,14 @@ HEARTS = chr(9829)
 DIAMONDS = chr(9830)
 SPADES = chr(9824)
 CLUBS = chr(9827)
+BACKSIDE = 'backside'
 
 def main():
     print("Welcome to Blackjack - PyTerminal Edition")
 
     money = 2000
-    while True:
+    while True: #Main game loop
+
         #Check if player has run out of money
         if money <= 0:
             print("You're broke!")
@@ -38,7 +40,13 @@ def main():
         dealerHand = [deck.pop(), deck.pop()]
         playerHand = [deck.pop(), deck.pop()]
 
-        print(dealerHand, playerHand)
+        #Handle player actions
+        print('Bet: ', bet)
+        while True: #Keep looping until player stands or busts
+            displayHands(playerHand, dealerHand, False)
+            print()
+            break
+
 
 
 def getBet(maxBet):
@@ -72,6 +80,76 @@ def getDeck():
     
     random.shuffle(deck)
     return deck
+
+def displayHands(playerHand, dealerHand, showDealerHand):
+    """
+    Show the player's and dealer's cards. Hide the dealer's first card
+    if showDealerHand is false.
+    """
+    print()
+    if showDealerHand:
+        print('Dealer: ', getHandValue(dealerHand))
+        displayCards(dealerHand)
+    else:
+        print('Dealer: ???')
+        #Hide the dealer's first card
+        displayCards([BACKSIDE] + dealerHand[1:])
+    
+    #Show the player's cards
+    print('Player: ', getHandValue(playerHand))
+    displayCards(playerHand)
+
+
+def getHandValue(cards):
+    """
+    Returns the value of the cards.
+    Face cards are worth 10.
+    Aces are worth 1 or 11 (this function picks the appropriate value)
+    """
+    value = 0
+    numberOfAces = 0
+
+    for card in cards:
+        rank = card[0] #card is a tuple(rank, suit)
+        if rank == 'A':
+            numberOfAces += 1
+        elif rank in ('J','Q','K'):
+            value += 10
+        else:
+            value += int(rank)
+    
+    #Add the value for the aces
+    value += numberOfAces
+    for i in range(numberOfAces):
+        #If another 10 can be added without busting, do so
+        if value + 10 <= 21:
+            value += 10
+    
+    return value
+
+def displayCards(cards):
+    """Display all the cards in the cards list."""
+    rows = ['','','',''] #the text to display in each row
+
+    for i, card in enumerate(cards):
+        rows[0] += " __ " #top line of the card
+        if card == BACKSIDE:
+            #Print a card's back
+            rows[1] += "|## | "
+            rows[2] += "|###| "
+            rows[3] += "|_##| "
+        else:
+            #Print the card's front
+            rank, suit = card
+            rows[1] += "|{} |".format(rank.ljust(2))
+            rows[2] += "| {} |".format(suit)
+            rows[3] += "|_{}|".format(rank.rjust(2, "_"))
+    
+    #Print each row on the screen
+    for row in rows:
+        print(row)
+
+
 
 if __name__ == "__main__":
         main()
