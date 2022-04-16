@@ -33,6 +33,13 @@ def main():
         #Player to enter their bet for this round
         bet = getBet(money)
 
+        #Give the dealer and the player two cards each
+        deck = getDeck()
+        dealerHand = [deck.pop(), deck.pop()]
+        playerHand = [deck.pop(), deck.pop()]
+
+        print(dealerHand, playerHand)
+
 
 def getBet(maxBet):
     """Ask the player how much they want to bet for this round."""
@@ -54,6 +61,17 @@ def getBet(maxBet):
         print("You don't have enough money!")
 
 
+def getDeck():
+    """Return a list of (rank,suit) tuples for all 52 cards."""
+    deck = []
+    for suit in (HEARTS, DIAMONDS, SPADES, CLUBS):
+        for rank in range(2,11):
+            deck.append((str(rank), suit)) #Add numbered cards
+        for rank in ('J','Q','K','A'):
+            deck.append((str(rank), suit)) #Add face and ace cards
+    
+    random.shuffle(deck)
+    return deck
 
 if __name__ == "__main__":
         main()
