@@ -45,7 +45,14 @@ def main():
         while True: #Keep looping until player stands or busts
             displayHands(playerHand, dealerHand, False)
             print()
-            break
+            
+            #Check if the player has bust
+            if getHandValue(playerHand) > 21:
+                break
+
+            #Get player's move - either H, S, D
+            move = getMove(playerHand, money - bet)
+
 
 
 
@@ -150,6 +157,27 @@ def displayCards(cards):
         print(row)
 
 
+def getMove(playerHand, money):
+    """
+    Asks the player for their move.
+    Returns H for hit, S for stand, D for double-down.
+    """
+    while True: #Keep looping until the player makes a correct move
+        #Determine what moves a player can make
+        moves = ['(H)it', '(S)tand']
+
+        #The player can double down on their first move, which we can tell if they have exactly 2 cards
+        if len(playerHand) == 2 and money > 0:
+            moves.append('(D)ouble down')
+        
+        #Get the player's move
+        movePrompt = ', '.join(moves) + '> '
+        move = input(movePrompt).upper()
+        
+        if move in ('H','S'): #Return successful on valid moves
+            return move
+        if move == 'D' and '(D)ouble down' in moves:
+            return move
 
 if __name__ == "__main__":
         main()
