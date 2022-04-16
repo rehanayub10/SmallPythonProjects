@@ -10,6 +10,8 @@
 #   In case of a tie, the bet is returned to the player.
 #   The dealer stops hitting at 17.
 
+#Extensions: add flowchart, splitting function: https://www.islandresortandcasino.com/blog/ask-the-dealer-what-does-double-down-mean-in-blackjack
+
 import random, sys
 
 #Set up the constants
@@ -53,6 +55,63 @@ def main():
             #Get player's move - either H, S, D
             move = getMove(playerHand, money - bet)
 
+            #Handle the player's actions
+            if move == 'D':
+                #Player is doubling down, they can increase their bet
+                additionalBet = getBet(min(bet, money - bet))
+                bet += additionalBet
+                print("Bet increase by {}".format(additionalBet))
+                print("Bet: ", bet)
+            
+            if move in ('H','D'):
+                #Hit/doubling down takes another card
+                newCard = deck.pop()
+                rank, suit = newCard
+                print("You drew a {} of {}".format(rank, suit))
+                playerHand.append(newCard)
+
+                #Check if player has busted
+                if getHandValue(playerHand) > 21:
+                    continue
+            
+            if move in ('S','D'):
+                #Stand/doubling down stops the player's turn
+                break
+
+        #Handle dealer's actions
+        if getHandValue(playerHand) <= 21:
+            while getHandValue(dealerHand) < 17:
+                print("Dealer hits...")
+                dealerHand.append(deck.pop())
+                displayHands(playerHand, dealerHand, False)
+
+                if getHandValue(dealerHand) > 21:
+                    break #The dealer has busted
+                input("Press Enter to continue...")
+                print('\n\n')
+            
+        
+        #Show final hands
+        displayHands(playerHand, dealerHand, True)
+
+        playerValue = getHandValue(playerHand)
+        dealerValue = getHandValue(dealerHand)
+        
+        #Handle whether the player won, lost or tied
+        if dealerValue > 21:
+            print('Dealer busts! You win {}'.format(bet))
+            money += bet
+        elif playerValue > 21 or (playerValue < dealerValue):
+            print('You lost {}!'.format(bet))
+            money -= bet
+        elif playerValue > dealerValue:
+            print("You won!")
+            money += bet
+        elif playerValue == dealerValue:
+            print("It's a tie. The bet is returned to you.")
+        
+        input("Press Enter to continue...")
+        print('\n\n')
 
 
 
@@ -102,6 +161,8 @@ def displayHands(playerHand, dealerHand, showDealerHand):
         #Hide the dealer's first card
         displayCards([BACKSIDE] + dealerHand[1:])
     
+    print('\n')
+
     #Show the player's cards
     print('Player: ', getHandValue(playerHand))
     displayCards(playerHand)
