@@ -1,1 +1,1 @@
-# SmallPythonProjects
+# Small Python Projects
